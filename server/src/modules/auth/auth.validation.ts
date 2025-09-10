@@ -3,8 +3,8 @@ import { z } from 'zod'
 const registerSchema = z.object({
   email: z.email('Email is invalid'),
   password: z.string().min(7, 'Password must be minimun of 7 characters'),
-  first_name: z.string('First name is invalid').min(2),
-  last_name: z.string('Last name is invalid').min(2),
+  firstName: z.string('First name is invalid').min(2),
+  lastName: z.string('Last name is invalid').min(2),
 })
 
 export type RegisterSchema = z.infer<typeof registerSchema>

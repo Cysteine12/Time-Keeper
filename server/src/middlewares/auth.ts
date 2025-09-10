@@ -7,7 +7,7 @@ import type { JwtPayload } from '../types/index.js'
 const authenticate = () => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const token = req.headers?.accessToken
+      const token = req.headers?.Authorization
       if (!token) throw new UnauthenticatedError('No token provided')
 
       const payload = jwt.verify(
