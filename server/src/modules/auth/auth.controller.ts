@@ -1,4 +1,5 @@
 import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken'
 import catchAsync from '../../utils/catchAsync.js'
 import emailService from '../../services/email.service.js'
 import { generateOTP } from './auth.util.js'
@@ -14,6 +15,7 @@ import type {
 import User from '../user/user.model.js'
 import Token from './token.model.js'
 import authService from './auth.service.js'
+import config from '../../config/config.js'
 
 const register = catchAsync(async (req, res) => {
   let newUser: RegisterSchema = req.body
@@ -124,7 +126,7 @@ const verifyEmail = catchAsync(async (req, res) => {
 
     throw new ValidationError('OTP expired. A new one has been sent.')
   }
-  await Token.deleteOne({ id: token.id })
+  await Token.deleteOne({ _id: token._id })
 
   const updatedUser = await User.findOneAndUpdate(
     { email },
@@ -140,10 +142,35 @@ const verifyEmail = catchAsync(async (req, res) => {
   })
 })
 
+const refreshToken = catchAsync(async (req, res) => {
+  const refreshToken = req.body.refreshToken
+
+  if (!refreshToken) throw new ValidationError('No refresh token')
+
+  jwt.verify(
+    refreshToken,
+    config.jwt.REFRESH_TOKEN_SECRET,
+    async (err: any, payload: any) => {
+      if (err) throw new ValidationError('Invalid or expired token')
+
+      const tokens = await authService.generateAndSaveAuthTokens(payload.sub)
+
+      res.status(200).json({
+        success: true,
+        data: {
+          accessToken: tokens.access.token,
+          refreshToken: tokens.refresh.token,
+        },
+        message: 'Tokens refreshed successfully',
+      })
+    }
+  )
+})
+
 const getProfile = catchAsync(async (req, res) => {
   const userId = req.user?.id
 
-  const user = await User.findOne({ id: userId })
+  const user = await User.findOne({ _id: userId })
   if (!user) throw new NotFoundError('User not found')
 
   delete (user as any).password
@@ -165,6 +192,7 @@ export default {
   register,
   login,
   verifyEmail,
+  refreshToken,
   getProfile,
   logout,
 }

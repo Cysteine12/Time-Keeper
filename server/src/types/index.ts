@@ -1,5 +1,7 @@
+import { Types } from 'mongoose'
+
 export type JwtPayload = {
-  id: string
+  id: Types.ObjectId
 }
 
 export interface APIResponse<T = any> {

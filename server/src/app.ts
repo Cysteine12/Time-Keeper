@@ -1,5 +1,4 @@
 import express from 'express'
-import cors from 'cors'
 import helmet from 'helmet'
 import config from './config/config.js'
 import { errorHandler, notFoundHandler } from './middlewares/errorHandler.js'
@@ -10,22 +9,6 @@ const app = express()
 
 app.use(appLogger)
 
-app.use(
-  cors({
-    origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: [
-      'Accept',
-      'Accept-Language',
-      'X-Requested-With',
-      'Content-Language',
-      'Content-Type',
-      'Origin',
-      'Authorization',
-    ],
-    optionsSuccessStatus: 200,
-  })
-)
 app.use(helmet())
 
 app.use(express.json())

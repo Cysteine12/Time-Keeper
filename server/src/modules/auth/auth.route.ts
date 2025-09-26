@@ -24,6 +24,8 @@ router.post(
   authController.verifyEmail
 )
 
+router.post('/refresh-token', authController.refreshToken)
+
 router.get('/profile', authenticate, authController.getProfile)
 
 router.post('/logout', authController.logout)

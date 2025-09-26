@@ -10,7 +10,7 @@ const startServer = async () => {
     await db.connect()
     logger.info('Database connected')
 
-    app.listen(PORT, '::', () => {
+    app.listen(PORT, '0.0.0.0', () => {
       logger.info(`Server is running on port ${PORT}`)
     })
   } catch (err) {
